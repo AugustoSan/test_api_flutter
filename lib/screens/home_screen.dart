@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,8 +16,13 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Test API'),
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.pushNamed(context, '/settings'),
+              icon: const Icon(Icons.settings))
+        ],
       ),
-      body: ListView(
+      body: Column(
         children: [
           CardWidget(
             title: 'Consulta',
@@ -40,8 +46,6 @@ class HomeScreen extends StatelessWidget {
                         if (newValue != null) {
                           requestProvider.setMethod = newValue;
                         }
-
-                        print(requestProvider.getMethod);
                       },
                     ),
                     Expanded(
@@ -52,7 +56,6 @@ class HomeScreen extends StatelessWidget {
                         onChanged: (String? value) {
                           if (value != null) {
                             requestProvider.setUrl = value;
-                            print(requestProvider.getURL);
                           }
                         },
                       ),
@@ -86,34 +89,83 @@ class HomeScreen extends StatelessWidget {
             ),
             height: 150,
           ),
-          CardWidget(
-            height: 200,
-            title: 'Parametros',
-            child: Column(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: ElevatedButton(
-                      onPressed: () {}, child: const Text('Agregar')),
+          Expanded(
+            child: CarouselSlider(
+              items: [
+                CardWidget(
+                  title: 'Params',
+                  child: _ParamsWidget(
+                    params: requestProvider.getParams,
+                  ),
                 ),
-                Expanded(
-                    child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (BuildContext context, int index) {
-                    return const ItemParamsUrlWidget();
-                  },
-                )),
+                CardWidget(
+                  title: 'Headers',
+                  child: _HeadersWidget(
+                    headers: requestProvider.getHeaders,
+                  ),
+                ),
               ],
+              options: CarouselOptions(height: double.infinity),
             ),
           ),
-          const CardWidget(
-              height: 400,
-              title: 'Response',
-              child: WebView(
-                initialUrl: 'https://flutter.dev',
-              )),
         ],
       ),
+    );
+  }
+}
+
+class _HeadersWidget extends StatelessWidget {
+  final Map<String, String> headers;
+  const _HeadersWidget({
+    Key? key,
+    required this.headers,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Divider(),
+        SizedBox(
+          child: TextButton(onPressed: () {}, child: const Text('Agregar')),
+        ),
+        const Divider(),
+        Expanded(
+          child: ListView.builder(
+              itemCount: headers.length,
+              itemBuilder: (_, index) {
+                return Text('data');
+              }),
+        ),
+      ],
+    );
+  }
+}
+
+class _ParamsWidget extends StatelessWidget {
+  final Map<String, String> params;
+  const _ParamsWidget({
+    Key? key,
+    required this.params,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Divider(),
+        SizedBox(
+          child: TextButton(onPressed: () {}, child: const Text('Agregar')),
+        ),
+        const Divider(),
+        Expanded(
+          child: ListView.builder(
+              itemCount: params.length,
+              itemBuilder: (_, index) {
+                return Text('data');
+              }),
+        ),
+      ],
     );
   }
 }
