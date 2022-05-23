@@ -7,6 +7,8 @@ import 'package:test_api_flutter/entities/request_entity.dart';
 class RequestProvider extends ChangeNotifier {
   RequestEntity requestEntity = RequestEntity();
   bool onLoad = false;
+  String _titleParam = '';
+  String _valueParam = '';
   /*
   String _method = 'GET';
   String _url = '';
@@ -14,6 +16,26 @@ class RequestProvider extends ChangeNotifier {
   Map<String, String> _headers = <String, String>{};
 
 */
+
+  set setTitleParam(String title) {
+    _titleParam = title;
+  }
+
+  String get getTitleParam {
+    return _titleParam;
+  }
+
+  set setValueParam(String value) {
+    _valueParam = value;
+  }
+
+  String get getValueParam {
+    return _valueParam;
+  }
+
+  void initVarParams() {
+    _titleParam = _valueParam = '';
+  }
 
   set setUrl(String url) {
     requestEntity.url = url;
@@ -32,36 +54,73 @@ class RequestProvider extends ChangeNotifier {
     return requestEntity.method;
   }
 
-  Map<String, String> get getParams {
-    return requestEntity.params;
+  List<ItemParams> get getParams {
+    return requestEntity.listParams;
   }
 
-  Map<String, String> get getHeaders {
-    return requestEntity.headers;
+  List<ItemHeader> get getHeaders {
+    return requestEntity.listHeaders;
   }
 
   void addParams(String title, String value) {
-    requestEntity.params.addAll(<String, String>{title: value});
+    ItemParams item = ItemParams(status: true, title: title, value: value);
+    requestEntity.listParams.add(item);
+    notifyListeners();
   }
 
   void deleteParams(String title) {
-    requestEntity.params.remove(title);
+    for (var item in requestEntity.listParams) {
+      if (item.title == title) {
+        requestEntity.listParams.remove(item);
+      }
+    }
   }
 
   void deleteAllParams() {
-    requestEntity.params.clear();
+    requestEntity.listParams.clear();
   }
 
   void addHeaders(String title, String value) {
-    requestEntity.headers.addAll(<String, String>{title: value});
+    ItemHeader item = ItemHeader(status: true, title: title, value: value);
+    requestEntity.listHeaders.add(item);
   }
 
   void deleteHeaders(String title) {
-    requestEntity.headers.remove(title);
+    for (var item in requestEntity.listHeaders) {
+      if (item.title == title) {
+        requestEntity.listHeaders.remove(item);
+      }
+    }
   }
 
   void deleteAllHeaders() {
-    requestEntity.headers.clear();
+    requestEntity.listHeaders.clear();
+  }
+
+  void updateParams(int index, {bool? status, String? title, String? value}) {
+    if (status != null) {
+      requestEntity.listParams[index].status = status;
+    }
+    if (title != null) {
+      requestEntity.listParams[index].title = title;
+    }
+    if (value != null) {
+      requestEntity.listParams[index].value = value;
+    }
+    notifyListeners();
+  }
+
+  void updateHeaders(int index, bool? status, String? title, String? value) {
+    if (status != null) {
+      requestEntity.listHeaders[index].status = status;
+    }
+    if (title != null) {
+      requestEntity.listHeaders[index].title = title;
+    }
+    if (value != null) {
+      requestEntity.listHeaders[index].value = value;
+    }
+    notifyListeners();
   }
 
   Future<void> sendRequest() async {
@@ -100,8 +159,6 @@ class RequestProvider extends ChangeNotifier {
     onLoad = true;
     print('sendRequest');
 
-    Map<String, String> listHeaders = {};
-
     notifyListeners();
     final url = Uri.https('jsonplaceholder.typicode.com', '/posts/1');
     final response = await http.get(url);
@@ -133,8 +190,6 @@ class RequestProvider extends ChangeNotifier {
   Future<void> sendRequestPOST() async {
     onLoad = true;
     print('sendRequest');
-
-    Map<String, String> listHeaders = {};
 
     notifyListeners();
     final url = Uri.https('jsonplaceholder.typicode.com', '/posts/1');
@@ -168,8 +223,6 @@ class RequestProvider extends ChangeNotifier {
     onLoad = true;
     print('sendRequest');
 
-    Map<String, String> listHeaders = {};
-
     notifyListeners();
     final url = Uri.https('jsonplaceholder.typicode.com', '/posts/1');
     final response = await http.get(url);
@@ -201,8 +254,6 @@ class RequestProvider extends ChangeNotifier {
   Future<void> sendRequestDELETE() async {
     onLoad = true;
     print('sendRequest');
-
-    Map<String, String> listHeaders = {};
 
     notifyListeners();
     final url = Uri.https('jsonplaceholder.typicode.com', '/posts/1');

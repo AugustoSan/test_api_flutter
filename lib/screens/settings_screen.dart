@@ -10,7 +10,7 @@ class SettingsScreen extends StatelessWidget {
         title: const Text('Settings'),
       ),
       body: ListView(
-        children: [],
+        children: const [],
       ),
     );
   }

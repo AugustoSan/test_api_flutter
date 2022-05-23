@@ -11,7 +11,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark(),
+      theme: ThemeData.dark().copyWith(
+        errorColor: Colors.red[900],
+        primaryColor: Colors.blue,
+        textTheme: const TextTheme(
+            button: TextStyle(color: Colors.white),
+            caption: TextStyle(color: Colors.white),
+            headline3: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16)),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       debugShowCheckedModeBanner: false,
       title: 'Test API Flutter',
       home: MultiProvider(
