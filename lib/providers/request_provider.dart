@@ -9,13 +9,6 @@ class RequestProvider extends ChangeNotifier {
   bool onLoad = false;
   String _titleParam = '';
   String _valueParam = '';
-  /*
-  String _method = 'GET';
-  String _url = '';
-  Map<String, String> _paramsUrl = <String, String>{};
-  Map<String, String> _headers = <String, String>{};
-
-*/
 
   set setTitleParam(String title) {
     _titleParam = title;
@@ -68,12 +61,10 @@ class RequestProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteParams(String title) {
-    for (var item in requestEntity.listParams) {
-      if (item.title == title) {
-        requestEntity.listParams.remove(item);
-      }
-    }
+  void deleteParams(int index) {
+    print('Se elimina el indice: ' + index.toString());
+    requestEntity.listParams.removeAt(index);
+    notifyListeners();
   }
 
   void deleteAllParams() {

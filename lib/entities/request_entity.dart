@@ -25,4 +25,11 @@ class ItemParams {
     required this.title,
     required this.value,
   });
+
+  String getStringAll() {
+    if (status) {
+      return title + '=' + value;
+    }
+    return '';
+  }
 }
