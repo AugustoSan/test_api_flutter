@@ -2,7 +2,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_api_flutter/entities/entities.dart';
-import 'package:test_api_flutter/routes/routes.dart';
 
 import 'package:test_api_flutter/widgets/widgets.dart';
 import 'package:test_api_flutter/providers/providers.dart';
@@ -109,7 +108,9 @@ class _RequestWidget extends StatelessWidget {
           onTap: () async {
             //Aqui se envian los datos para validar
             if (requestProvider.getUrl.isNotEmpty) {
-              requestProvider.sendRequest();
+              final response = await requestProvider.sendRequest();
+              print(response.statusCode);
+              print(response.body);
             } else {
               showDialog(
                   context: context,
@@ -173,14 +174,88 @@ class _HeadersWidget extends StatelessWidget {
       children: [
         const Divider(),
         SizedBox(
-          child: TextButton(onPressed: () {}, child: const Text('Agregar')),
+          child: TextButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (_) {
+                      return AlertDialog(
+                        actions: [
+                          const Text('Title'),
+                          InputWidget(
+                              title: 'title',
+                              onChange: (String? v) {
+                                if (v != null) {
+                                  requestProvider.setTitleParam = v;
+                                }
+                              }),
+                          InputWidget(
+                              title: 'value',
+                              onChange: (String? v) {
+                                if (v != null) {
+                                  requestProvider.setValueParam = v;
+                                }
+                              }),
+                          Row(
+                            children: [
+                              TextButton.icon(
+                                style: TextButton.styleFrom(
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor),
+                                onPressed: () {
+                                  requestProvider.addHeaders(
+                                      requestProvider.getTitleParam,
+                                      requestProvider.getValueParam);
+                                  Navigator.pop(context);
+                                },
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                                label: Text(
+                                  'Add',
+                                  style: Theme.of(context).textTheme.caption,
+                                ),
+                              ),
+                              TextButton.icon(
+                                  onPressed: () {
+                                    requestProvider.initVarParams();
+                                    Navigator.pop(context);
+                                  },
+                                  icon: Icon(
+                                    Icons.cancel,
+                                    color: Theme.of(context).iconTheme.color,
+                                  ),
+                                  label: Text(
+                                    'Cancel',
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                  style: TextButton.styleFrom(
+                                      backgroundColor:
+                                          Theme.of(context).errorColor)),
+                            ],
+                          )
+                        ],
+                      );
+                    });
+              },
+              child: const Text('Agregar')),
         ),
         const Divider(),
         Expanded(
           child: ListView.builder(
               itemCount: _headers.length,
               itemBuilder: (_, index) {
-                return const Text('data');
+                 return ItemParamsWidget(
+                  params: _headers[index],
+                  onUpdate: (bool? value) {
+                    requestProvider.updateParams(index, status: value);
+                  },
+                  onDelete: () {
+                    requestProvider.deleteParams(index);
+                    Navigator.pop(context);
+                  },
+                );
               }),
         ),
       ],

@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:test_api_flutter/entities/request_entity.dart';
+import 'package:test_api_flutter/entities/entities.dart';
+import 'package:test_api_flutter/helpers/helpers.dart';
 
 class RequestProvider extends ChangeNotifier {
   RequestEntity requestEntity = RequestEntity();
@@ -74,6 +74,7 @@ class RequestProvider extends ChangeNotifier {
   void addHeaders(String title, String value) {
     ItemHeader item = ItemHeader(status: true, title: title, value: value);
     requestEntity.listHeaders.add(item);
+    notifyListeners();
   }
 
   void deleteHeaders(String title) {
@@ -114,26 +115,24 @@ class RequestProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> sendRequest() async {
+  Future<http.Response> sendRequest() async {
+    http.Response response =
+        http.Response('Not found body', ErrorHelper.errorRequest);
     if (validUrl()) {
       switch (requestEntity.method) {
         case 'GET':
-          print('get');
-          break;
+          return sendRequestGET();
         case 'POST':
-          print('post');
-          break;
+          return sendRequestPOST();
         case 'PUT':
-          print('put');
-          break;
+          return sendRequestPUT();
         case 'DELETE':
-          print('delete');
-          break;
+          return sendRequestDELETE();
         default:
-          print('default');
+          return response;
       }
     } else {
-      print('Url is not valid');
+      return response;
     }
   }
 
@@ -146,27 +145,19 @@ class RequestProvider extends ChangeNotifier {
     return false;
   }
 
-  Future<void> sendRequestGET() async {
+  Future<http.Response> sendRequestGET() async {
     onLoad = true;
     print('sendRequest');
 
     notifyListeners();
-    final url = Uri.https('jsonplaceholder.typicode.com', '/posts/1');
-    final response = await http.get(url);
+    final response = await http.get(requestEntity.getUri());
 
     if (response.statusCode == 200) {
       // Si la llamada al servidor fue exitosa, analiza el JSON
       //return Post.fromJson(json.decode(response.body));
       //final body = response.body;
-      Map<String, dynamic> body = jsonDecode(response.body);
       final headers = response.headers;
-      body.forEach((item, value) {
-        //print(item);
-        if (headers.containsKey('content-type')) {
-          print('si existe content-type');
-        }
-        print(item + ': ' + value.toString());
-      });
+
       headers.forEach((key, value) {
         print(key + ': ' + value);
       });
@@ -176,16 +167,17 @@ class RequestProvider extends ChangeNotifier {
     }
     onLoad = false;
     notifyListeners();
+    return response;
   }
 
-  Future<void> sendRequestPOST() async {
+  Future<http.Response> sendRequestPOST() async {
     onLoad = true;
     print('sendRequest');
 
     notifyListeners();
     final url = Uri.https('jsonplaceholder.typicode.com', '/posts/1');
     final response = await http.get(url);
-
+    /*
     if (response.statusCode == 200) {
       // Si la llamada al servidor fue exitosa, analiza el JSON
       //return Post.fromJson(json.decode(response.body));
@@ -206,18 +198,20 @@ class RequestProvider extends ChangeNotifier {
       // Si la llamada no fue exitosa, lanza un error.
       throw Exception('Failed to load post');
     }
+    */
     onLoad = false;
     notifyListeners();
+    return response;
   }
 
-  Future<void> sendRequestPUT() async {
+  Future<http.Response> sendRequestPUT() async {
     onLoad = true;
     print('sendRequest');
 
     notifyListeners();
     final url = Uri.https('jsonplaceholder.typicode.com', '/posts/1');
     final response = await http.get(url);
-
+/*
     if (response.statusCode == 200) {
       // Si la llamada al servidor fue exitosa, analiza el JSON
       //return Post.fromJson(json.decode(response.body));
@@ -238,18 +232,20 @@ class RequestProvider extends ChangeNotifier {
       // Si la llamada no fue exitosa, lanza un error.
       throw Exception('Failed to load post');
     }
+    */
     onLoad = false;
     notifyListeners();
+    return response;
   }
 
-  Future<void> sendRequestDELETE() async {
+  Future<http.Response> sendRequestDELETE() async {
     onLoad = true;
     print('sendRequest');
 
     notifyListeners();
     final url = Uri.https('jsonplaceholder.typicode.com', '/posts/1');
     final response = await http.get(url);
-
+/*
     if (response.statusCode == 200) {
       // Si la llamada al servidor fue exitosa, analiza el JSON
       //return Post.fromJson(json.decode(response.body));
@@ -270,7 +266,9 @@ class RequestProvider extends ChangeNotifier {
       // Si la llamada no fue exitosa, lanza un error.
       throw Exception('Failed to load post');
     }
+    */
     onLoad = false;
     notifyListeners();
+    return response;
   }
 }

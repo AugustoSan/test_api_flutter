@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:test_api_flutter/entities/entities.dart';
 
 class ItemParamsWidget extends StatelessWidget {
-  final ItemParams params;
+  final ParamsRequest params;
   final Function onUpdate;
   final Function onDelete;
   const ItemParamsWidget({
